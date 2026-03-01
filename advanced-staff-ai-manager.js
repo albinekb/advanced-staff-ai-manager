@@ -980,11 +980,26 @@
             } else if (staffType === 'entertainer') {
                 staffTypeNum = 3;
             }
-            var entertainerType = staffType === 'entertainer' ? DeterministicRandom.randomInt(0, 6, this.getGameTick()) : 0;
+            var costumeIndex = 0;
+            if (staffType === 'entertainer') {
+                try {
+                    var allAnimObjs = objectManager.getAllObjects('peep_animations');
+                    var entertainerObjs = allAnimObjs.filter(function(obj) {
+                        return obj.identifier.indexOf('entertainer') !== -1;
+                    });
+                    var costumePool = entertainerObjs.length > 0 ? entertainerObjs : allAnimObjs;
+                    if (costumePool.length > 0) {
+                        var idx = DeterministicRandom.randomInt(0, costumePool.length - 1, this.getGameTick());
+                        costumeIndex = costumePool[idx].index;
+                    }
+                } catch (e) {
+                    costumeIndex = 0;
+                }
+            }
             var args = {
                 autoPosition: true,
                 staffType: staffTypeNum,
-                entertainerType: entertainerType,
+                costumeIndex: costumeIndex,
                 staffOrders: orders
             };
             var self = this;
